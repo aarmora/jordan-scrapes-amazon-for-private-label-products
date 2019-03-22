@@ -1,0 +1,28 @@
+{
+  "name": "jordan-scrapes-amazon-for-pl-products",
+  "version": "1.0.0",
+  "description": "Using Puppeteer, we scrape Amazon looking for private label products to sell.",
+  "main": "./dist/index.js",
+  "scripts": {
+    "start": "npm i && tsc && node ./dist/index.js"
+  },
+  "keywords": [
+    "Puppeteer",
+    "javascript",
+    "web",
+    "scraping",
+    "amazon"
+  ],
+  "author": "Jordan Hansen",
+  "license": "ISC",
+  "dependencies": {
+    "puppeteer": "^1.11.0",
+    "puppeteer-helpers": "^1.0.10",
+    "typescript": "^3.2.2",
+    "database-helpers": "2.0.2",
+    "webhook-discord": "3.0.3"
+  },
+  "devDependencies": {
+    "@types/puppeteer": "^1.11.1"
+  }
+}
