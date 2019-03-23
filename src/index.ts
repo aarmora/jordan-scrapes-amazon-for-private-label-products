@@ -29,7 +29,7 @@ const strict = true;
 
     for (let i = 0; i < productUrls.length; i++) {
         console.log('productUrls length and current index', productUrls.length, i, productUrls[i]);
-        console.log('Current number of keepers ****', keepers.length);
+        console.log('Current number of keepers ****', keepers, keepers.length);
 
         let detailsResults;
         try {
@@ -38,6 +38,7 @@ const strict = true;
         catch (e) {
             console.log('Error in getFromDetailsPage', e);
             // There aren't any details results so let's just carry on.
+            // TODO: Maybe we make an error counter
             continue;
         }
         productUrls = productUrls.concat(detailsResults.productUrls);
