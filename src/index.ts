@@ -29,6 +29,7 @@ const strict = true;
 
     for (let i = 0; i < productUrls.length; i++) {
         console.log('productUrls length and current index', productUrls.length, i, productUrls[i]);
+        console.log('Current number of keepers ****', keepers.length);
 
         let detailsResults;
         try {
@@ -40,8 +41,6 @@ const strict = true;
             continue;
         }
         productUrls = productUrls.concat(detailsResults.productUrls);
-
-        console.log('search term', detailsResults.searchTerm);
 
         let results: IResultsPageData;
         try {
@@ -56,7 +55,7 @@ const strict = true;
         // Check strictness. If we're strict, we're only going to add the url to our array. Otherwise we'll add the things that contribute to factors
         if (strict && (results.lowPriceCount < maxOfMinimumPrice && results.exceededMaxNumberOfReviewsCount < maxOfCompetitorMaxReviews)) {
             keepers.push(results.url);
-            console.log('added a keeper in strict mode', keepers);
+            console.log('***** Added a keeper in strict mode ******', results.url, keepers.length);
         }
         else if (!strict) {
             keepers.push({ url: results.url, lowPriceCount: results.lowPriceCount, exceededMaxNumberOfReviewsCount: results.exceededMaxNumberOfReviewsCount });

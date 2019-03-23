@@ -46,8 +46,6 @@ export async function getFromDetailsPage(browser: Browser, url: string) {
     const extraProductUrls: string[] = [];
 
     const extraProducts = await page.$$('.a-carousel-viewport li');
-
-    console.log('are there extra products?', extraProducts.length);
  
     for (let product of extraProducts) {
         const productUrl = await getPropertyBySelector(product, 'a', 'href');
