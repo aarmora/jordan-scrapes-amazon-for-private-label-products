@@ -1,5 +1,5 @@
 import puppeteer, { Browser } from 'puppeteer';
-import { scrapeCategoriesForProducts, getFromDetailsPage, getProductsFromResultsPage } from './scrapes';
+import { scrapeCategoriesForProducts, getFromDetailsPage, getProductsFromResultsPage, IResultsPageData } from './scrapes';
 import { categories } from './categories';
 
 // The max amount of reviews we want any competitor to have
@@ -20,34 +20,53 @@ const strict = true;
 (async () => {
     let browser: Browser = await setUpBrowser();
 
-    let productUrls = await scrapeCategoriesForProducts(browser, categories);
+    let starterProductUrls = await scrapeCategoriesForProducts(browser, categories);
     let keepers: any[] = [];
+
+    // Going to pick a random one to start
+    const randomIndex = Math.floor(Math.random() * Math.floor(starterProductUrls.length));
+    let productUrls = [starterProductUrls[randomIndex]];
 
     for (let i = 0; i < productUrls.length; i++) {
         console.log('productUrls length', productUrls.length);
 
-        const detailsResults = await getFromDetailsPage(browser, productUrls[i]);
+        let detailsResults;
+        try {
+            detailsResults = await getFromDetailsPage(browser, productUrls[i]);
+        }
+        catch (e) {
+            console.log('Error in getFromDetailsPage', e);
+            // There aren't any details results so let's just carry on.
+            continue;
+        }
         productUrls = productUrls.concat(detailsResults.productUrls);
 
         console.log('search term', detailsResults.searchTerm);
 
-        const results = await getProductsFromResultsPage(browser, detailsResults.searchTerm, competitorMaxReviews, minimumPrice);
+        let results: IResultsPageData;
+        try {
+            results = await getProductsFromResultsPage(browser, detailsResults.searchTerm, competitorMaxReviews, minimumPrice);
+        }
+        catch (e) {
+            console.log('error getting results, let\'s continue', e);
+            continue;
+        }
+        console.log('results', results.productUrls.length, results.lowPriceCount, results.exceededMaxNumberOfReviewsCount);
 
         // Check strictness. If we're strict, we're only going to add the url to our array. Otherwise we'll add the things that contribute to factors
         if (strict && (results.lowPriceCount < maxOfMinimumPrice && results.exceededMaxNumberOfReviewsCount < maxOfCompetitorMaxReviews)) {
             keepers.push(results.url);
+            console.log('added a keeper in strict mode', keepers);
         }
         else if (!strict) {
-            keepers.push({url: results.url, lowPriceCount: results.lowPriceCount, exceededMaxNumberOfReviewsCount: results.exceededMaxNumberOfReviewsCount});
+            keepers.push({ url: results.url, lowPriceCount: results.lowPriceCount, exceededMaxNumberOfReviewsCount: results.exceededMaxNumberOfReviewsCount });
+            console.log('added a keeper in not strict mode', keepers);
         }
-
-        console.log('keepers', keepers);
-        
-
     }
 
 
 })();
+
 
 
 async function setUpBrowser() {
