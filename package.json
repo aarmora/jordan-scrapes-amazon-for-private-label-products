@@ -4,7 +4,8 @@
   "description": "Using Puppeteer, we scrape Amazon looking for private label products to sell.",
   "main": "./dist/index.js",
   "scripts": {
-    "start": "npm i && tsc && node ./dist/index.js"
+    "start": "npm i && tsc && node ./dist/index.js",
+    "start:ubuntu": "tsc && node ./dist/index.js ubuntu"
   },
   "keywords": [
     "Puppeteer",
