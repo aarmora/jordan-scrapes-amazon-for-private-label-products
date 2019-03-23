@@ -28,7 +28,7 @@ const strict = true;
     let productUrls = [starterProductUrls[randomIndex]];
 
     for (let i = 0; i < productUrls.length; i++) {
-        console.log('productUrls length', productUrls.length);
+        console.log('productUrls length and current index', productUrls.length, i, productUrls[i]);
 
         let detailsResults;
         try {
@@ -51,7 +51,7 @@ const strict = true;
             console.log('error getting results, let\'s continue', e);
             continue;
         }
-        console.log('results', results.productUrls.length, results.lowPriceCount, results.exceededMaxNumberOfReviewsCount);
+        console.log('results productUrls.length, lowPriceCount, exceededMaxNumberOfReviewsCount', results.productUrls.length, results.lowPriceCount, results.exceededMaxNumberOfReviewsCount);
 
         // Check strictness. If we're strict, we're only going to add the url to our array. Otherwise we'll add the things that contribute to factors
         if (strict && (results.lowPriceCount < maxOfMinimumPrice && results.exceededMaxNumberOfReviewsCount < maxOfCompetitorMaxReviews)) {

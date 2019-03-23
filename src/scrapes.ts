@@ -80,7 +80,6 @@ export async function getProductsFromResultsPage(browser: Browser, searchTerm: s
         const reviews = await getPropertyBySelector(productOnPage, '.a-size-small span.a-size-base', 'innerHTML');
         if (reviews) {
             const numberOfReviews = parseInt(reviews.replace(',', ''));
-            console.log('number of reviews', numberOfReviews);
 
             // This page has a competitor with too many reviews. We're done here.
             // TODO: Maybe we relax this so it takes more than one product with a high number of reviews?
@@ -94,7 +93,6 @@ export async function getProductsFromResultsPage(browser: Browser, searchTerm: s
         let price = await getPropertyBySelector(productOnPage, '.a-price-whole', 'innerHTML');
         if (price) {
             price = parseInt(price);
-            console.log('price', price);
 
             if (price < minimumPrice) {
                 lowPriceCounter++;
