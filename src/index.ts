@@ -20,6 +20,8 @@ const strict = true;
 // This is to maybe try and limit just getting stuck in one category
 const howManyDetailUrls = 5;
 
+//
+
 (async () => {
     let browser: Browser = await setUpBrowser();
 
@@ -64,12 +66,18 @@ const howManyDetailUrls = 5;
 
         // Check strictness. If we're strict, we're only going to add the url to our array. Otherwise we'll add the things that contribute to factors
         if (strict && (results.lowPriceCount < maxOfMinimumPrice && results.exceededMaxNumberOfReviewsCount < maxOfCompetitorMaxReviews)) {
-            keepers.push(results.url);
-            console.log('***** Added a keeper in strict mode ******', results.url, keepers.length);
+            // Don't push a duplicate
+            if (keepers.filter(keeper => keeper === results.url).length === 0) {
+                keepers.push(results.url);
+                console.log('***** Added a keeper in strict mode ******', results.url, keepers.length);
+            }
         }
         else if (!strict) {
-            keepers.push({ url: results.url, lowPriceCount: results.lowPriceCount, exceededMaxNumberOfReviewsCount: results.exceededMaxNumberOfReviewsCount });
-            console.log('added a keeper in not strict mode', keepers);
+            // Don't push a duplicate
+            if (keepers.filter(keeper => keeper === results.url).length === 0) {
+                keepers.push({ url: results.url, lowPriceCount: results.lowPriceCount, exceededMaxNumberOfReviewsCount: results.exceededMaxNumberOfReviewsCount });
+                console.log('added a keeper in not strict mode', keepers);
+            }
         }
     }
 

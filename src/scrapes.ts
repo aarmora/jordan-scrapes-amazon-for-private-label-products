@@ -56,7 +56,16 @@ export async function getFromDetailsPage(browser: Browser, url: string) {
         return Promise.reject(e);
     }
 
-    const searchTerm = title.replace(brand, '');
+    // Remove the brand, split on commas and dashes
+    let searchTerm: string;
+    try {
+        searchTerm = title.replace(brand, '').split(',')[0].split('-')[0];
+    }
+    catch (e) {
+        await page.close();
+        return Promise.reject(e);
+    }
+    
     const extraProductUrls: string[] = [];
 
     const extraProducts = await page.$$('.a-carousel-viewport li');
