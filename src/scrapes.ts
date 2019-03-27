@@ -37,27 +37,41 @@ export async function getFromDetailsPage(browser: Browser, url: string) {
 
     await page.goto(url);
 
-    let title = await getPropertyBySelector(page, '#productTitle', 'innerHTML');
-    title = title.trim();
+    let title: string;
+    try {
+        title = await getPropertyBySelector(page, '#productTitle', 'innerHTML');
+        title = title.trim();
+    }
+    catch (e) {
+        await page.close();
+        return Promise.reject(e);
+    }
 
-    let brand = await getPropertyBySelector(page, '#bylineInfo', 'innerHTML');
+    let brand: string;
+    try {
+        brand = await getPropertyBySelector(page, '#bylineInfo', 'innerHTML');
+    }
+    catch (e) {
+        await page.close();
+        return Promise.reject(e);
+    }
 
     const searchTerm = title.replace(brand, '');
     const extraProductUrls: string[] = [];
 
     const extraProducts = await page.$$('.a-carousel-viewport li');
- 
+
     for (let product of extraProducts) {
         const productUrl = await getPropertyBySelector(product, 'a', 'href');
 
         if (!productUrl.includes('javascript')) {
             extraProductUrls.push(productUrl);
-        }        
+        }
     }
 
     await page.close();
 
-    return Promise.resolve({searchTerm: searchTerm, productUrls: extraProductUrls});
+    return Promise.resolve({ searchTerm: searchTerm, productUrls: extraProductUrls });
 
 }
 
