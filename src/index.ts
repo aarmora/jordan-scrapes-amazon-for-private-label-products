@@ -17,6 +17,9 @@ const maxOfMinimumPrice = 3;
 // With this to false, we'll return all pages but we'll have a count of high number of reviews and prices below minimum
 const strict = true;
 
+// This is to maybe try and limit just getting stuck in one category
+const howManyDetailUrls = 5;
+
 (async () => {
     let browser: Browser = await setUpBrowser();
 
@@ -41,7 +44,13 @@ const strict = true;
             // TODO: Maybe we make an error counter
             continue;
         }
-        productUrls = productUrls.concat(detailsResults.productUrls);
+
+        if (howManyDetailUrls) {
+            productUrls = productUrls.concat(detailsResults.productUrls.slice(0, howManyDetailUrls));
+        }
+        else {
+            productUrls = productUrls.concat(detailsResults.productUrls);
+        }
 
         let results: IResultsPageData;
         try {
