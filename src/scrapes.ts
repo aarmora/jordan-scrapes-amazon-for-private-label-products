@@ -60,12 +60,15 @@ export async function getFromDetailsPage(browser: Browser, url: string) {
     let searchTerm: string;
     try {
         searchTerm = title.replace(brand, '').split(',')[0].split('-')[0];
+        // Get the first four words
+        searchTerm = searchTerm.split(' ').slice(0, 4).join().replace(/,/g, ' ');
+
     }
     catch (e) {
         await page.close();
         return Promise.reject(e);
     }
-    
+
     const extraProductUrls: string[] = [];
 
     const extraProducts = await page.$$('.a-carousel-viewport li');
