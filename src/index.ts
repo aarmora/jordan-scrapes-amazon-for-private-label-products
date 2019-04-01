@@ -20,64 +20,69 @@ const strict = true;
 // This is to maybe try and limit just getting stuck in one category
 const howManyDetailUrls = 5;
 
-//
+// Max count per starter product
+const countPerStarterProduct = 10;
 
 (async () => {
     let browser: Browser = await setUpBrowser();
 
+    // This should give us a bunch of products to start with throughout a bunch of different categories
     let starterProductUrls = await scrapeCategoriesForProducts(browser, categories);
     let keepers: any[] = [];
 
-    // Going to pick a random one to start
-    const randomIndex = Math.floor(Math.random() * Math.floor(starterProductUrls.length));
-    let productUrls = [starterProductUrls[randomIndex]];
+    for (let limit = 0; limit < 10; limit++) {
+        // Going to pick a random one to start
+        const randomIndex = Math.floor(Math.random() * Math.floor(starterProductUrls.length));
+        let productUrls = [starterProductUrls[randomIndex]];
 
-    for (let i = 0; i < productUrls.length; i++) {
-        console.log('productUrls length and current index', productUrls.length, i, productUrls[i]);
-        console.log('Current number of keepers ****', keepers, keepers.length);
+        for (let i = 0; i < countPerStarterProduct; i++) {
+            console.log('productUrls length and current index', productUrls.length, i, productUrls[i]);
+            console.log('Current number of keepers ****', keepers, keepers.length);
 
-        let detailsResults;
-        try {
-            detailsResults = await getFromDetailsPage(browser, productUrls[i]);
-        }
-        catch (e) {
-            console.log('Error in getFromDetailsPage', e);
-            // There aren't any details results so let's just carry on.
-            // TODO: Maybe we make an error counter
-            continue;
-        }
-
-        if (howManyDetailUrls) {
-            productUrls = productUrls.concat(detailsResults.productUrls.slice(0, howManyDetailUrls));
-        }
-        else {
-            productUrls = productUrls.concat(detailsResults.productUrls);
-        }
-
-        let results: IResultsPageData;
-        try {
-            results = await getProductsFromResultsPage(browser, detailsResults.searchTerm, competitorMaxReviews, minimumPrice);
-        }
-        catch (e) {
-            console.log('error getting results, let\'s continue', e);
-            continue;
-        }
-        console.log('results productUrls.length, lowPriceCount, exceededMaxNumberOfReviewsCount', results.productUrls.length, results.lowPriceCount, results.exceededMaxNumberOfReviewsCount);
-
-        // Check strictness. If we're strict, we're only going to add the url to our array. Otherwise we'll add the things that contribute to factors
-        if (strict && (results.lowPriceCount < maxOfMinimumPrice && results.exceededMaxNumberOfReviewsCount < maxOfCompetitorMaxReviews)) {
-            // Don't push a duplicate
-            if (keepers.filter(keeper => keeper === results.url).length === 0) {
-                keepers.push(results.url);
-                console.log('***** Added a keeper in strict mode ******', results.url, keepers.length);
+            let detailsResults;
+            try {
+                detailsResults = await getFromDetailsPage(browser, productUrls[i]);
             }
-        }
-        else if (!strict) {
-            // Don't push a duplicate
-            if (keepers.filter(keeper => keeper === results.url).length === 0) {
-                keepers.push({ url: results.url, lowPriceCount: results.lowPriceCount, exceededMaxNumberOfReviewsCount: results.exceededMaxNumberOfReviewsCount });
-                console.log('added a keeper in not strict mode', keepers);
+            catch (e) {
+                console.log('Error in getFromDetailsPage', e);
+                // There aren't any details results so let's just carry on.
+                // TODO: Maybe we make an error counter
+                continue;
             }
+
+            if (howManyDetailUrls) {
+                productUrls = productUrls.concat(detailsResults.productUrls.slice(0, howManyDetailUrls));
+            }
+            else {
+                productUrls = productUrls.concat(detailsResults.productUrls);
+            }
+
+            let results: IResultsPageData;
+            try {
+                results = await getProductsFromResultsPage(browser, detailsResults.searchTerm, competitorMaxReviews, minimumPrice);
+            }
+            catch (e) {
+                console.log('error getting results, let\'s continue', e);
+                continue;
+            }
+            console.log('results productUrls.length, lowPriceCount, exceededMaxNumberOfReviewsCount', results.productUrls.length, results.lowPriceCount, results.exceededMaxNumberOfReviewsCount);
+
+            // Check strictness. If we're strict, we're only going to add the url to our array. Otherwise we'll add the things that contribute to factors
+            if (strict && (results.lowPriceCount < maxOfMinimumPrice && results.exceededMaxNumberOfReviewsCount < maxOfCompetitorMaxReviews)) {
+                // Don't push a duplicate
+                if (keepers.filter(keeper => keeper === results.url).length === 0) {
+                    keepers.push(results.url);
+                    console.log('***** Added a keeper in strict mode ******', results.url, keepers.length);
+                }
+            }
+            else if (!strict) {
+                // Don't push a duplicate
+                if (keepers.filter(keeper => keeper === results.url).length === 0) {
+                    keepers.push({ url: results.url, lowPriceCount: results.lowPriceCount, exceededMaxNumberOfReviewsCount: results.exceededMaxNumberOfReviewsCount });
+                    console.log('added a keeper in not strict mode', keepers);
+                }
+            }
+            
         }
     }
 
