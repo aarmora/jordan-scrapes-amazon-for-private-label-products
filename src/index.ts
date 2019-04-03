@@ -1,6 +1,10 @@
 import puppeteer, { Browser } from 'puppeteer';
 import { scrapeCategoriesForProducts, getFromDetailsPage, getProductsFromResultsPage, IResultsPageData } from './scrapes';
 import { categories } from './categories';
+import * as dbHelper from 'database-helpers';
+import * as dotenv from 'dotenv';
+
+dotenv.config();
 
 // The max amount of reviews we want any competitor to have
 const competitorMaxReviews = 500;
@@ -21,7 +25,10 @@ const strict = true;
 const howManyDetailUrls = 5;
 
 // Max count per starter product
-const countPerStarterProduct = 10;
+const countPerStarterProduct = 100;
+
+// Save to a database
+const saveToDatabase = true;
 
 (async () => {
     let browser: Browser = await setUpBrowser();
@@ -30,6 +37,7 @@ const countPerStarterProduct = 10;
     let starterProductUrls = await scrapeCategoriesForProducts(browser, categories);
     let keepers: any[] = [];
 
+    // Let's get 
     for (let limit = 0; limit < 10; limit++) {
         // Going to pick a random one to start
         const randomIndex = Math.floor(Math.random() * Math.floor(starterProductUrls.length));
@@ -72,6 +80,11 @@ const countPerStarterProduct = 10;
                 // Don't push a duplicate
                 if (keepers.filter(keeper => keeper === results.url).length === 0) {
                     keepers.push(results.url);
+                    if (saveToDatabase) {
+                        const db = await dbHelper.initializeMongo(process.env.mongoUrl as string);
+                        await dbHelper.insertToMongo(db, process.env.mongoCollection as string, results.url);
+                    }
+
                     console.log('***** Added a keeper in strict mode ******', results.url, keepers.length);
                 }
             }

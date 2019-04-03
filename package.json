@@ -24,6 +24,7 @@
     "webhook-discord": "3.0.3"
   },
   "devDependencies": {
-    "@types/puppeteer": "^1.11.1"
+    "@types/puppeteer": "^1.11.1",
+    "dotenv": "^7.0.0"
   }
 }
