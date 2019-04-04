@@ -28,7 +28,7 @@ const howManyDetailUrls = 5;
 const countPerStarterProduct = 100;
 
 // Save to a database
-const saveToDatabase = true;
+const saveToDatabase = false;
 
 (async () => {
     let browser: Browser = await setUpBrowser();
