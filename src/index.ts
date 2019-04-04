@@ -81,7 +81,8 @@ const saveToDatabase = true;
                 if (keepers.filter(keeper => keeper === results.url).length === 0) {
                     keepers.push(results.url);
                     if (saveToDatabase) {
-                        const db = await dbHelper.initializeMongo(process.env.mongoUrl as string);
+                        const dbUrl = `mongodb://${process.env.mongoUser}:${process.env.mongoPass}@${process.env.mongoUrl}/dot-contacts`;
+                        const db = await dbHelper.initializeMongo(dbUrl);
                         await dbHelper.insertToMongo(db, process.env.mongoCollection as string, results.url);
                     }
 
